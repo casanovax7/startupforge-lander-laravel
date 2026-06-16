@@ -1,0 +1,14 @@
+@import "tailwindcss";
+@plugin '@tailwindcss/typography';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+@theme {
+    --font-sans:
+        "Figtree", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+        "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    --color-primary: oklch(0.2768 0 0);
+    --color-accent: oklch(0.981 0.0407 99.5654);
+    --color-accent-dark: oklch(0.8615 0.1749 89.2816);
+}
