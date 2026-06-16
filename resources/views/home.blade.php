@@ -124,48 +124,53 @@
                 and we'll get you set up.</p>
         </div>
 
-        @if (session('success'))
-        <div class="mb-8 p-4 bg-green-50 border border-green-200 rounded-xl text-green-800 text-sm text-center">
-            {{ session('success') }}
+        <div id="form-success"
+            class="hidden mb-8 p-6 bg-green-50 border border-green-200 rounded-xl text-green-800 text-center">
+            <svg class="w-10 h-10 mx-auto mb-3 text-green-500" fill="none" stroke="currentColor" stroke-width="1.5"
+                viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p class="font-semibold text-base">Your request has been submitted!</p>
+            <p class="text-sm mt-1 text-green-700">We'll be in touch soon.</p>
         </div>
-        @endif
 
-        <form action="{{ route('request-access.store') }}" method="POST" class="space-y-5">
+        <form id="access-form" action="{{ route('request-access.store') }}" method="POST" class="space-y-5">
             @csrf
 
             <div>
                 <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                <input type="text" id="name" name="name" value="{{ old('name') }}" required
+                <input type="text" id="name" name="name" required
                     class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-accent-dark focus:ring-2 focus:ring-accent/30 outline-none transition-all"
                     placeholder="Jane Smith">
-                @error('name') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                <p class="mt-1 text-xs text-red-600 hidden" data-error="name"></p>
             </div>
 
             <div class="grid sm:grid-cols-2 gap-5">
                 <div>
                     <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                    <input type="email" id="email" name="email" value="{{ old('email') }}" required
+                    <input type="email" id="email" name="email" required
                         class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-accent-dark focus:ring-2 focus:ring-accent/30 outline-none transition-all"
                         placeholder="jane@university.edu">
-                    @error('email') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                    <p class="mt-1 text-xs text-red-600 hidden" data-error="email"></p>
                 </div>
                 <div>
                     <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone <span
                             class="text-gray-400">(optional)</span></label>
-                    <input type="tel" id="phone" name="phone" value="{{ old('phone') }}"
+                    <input type="tel" id="phone" name="phone"
                         class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-accent-dark focus:ring-2 focus:ring-accent/30 outline-none transition-all"
                         placeholder="(555) 123-4567">
-                    @error('phone') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                    <p class="mt-1 text-xs text-red-600 hidden" data-error="phone"></p>
                 </div>
             </div>
 
             <div>
                 <label for="school" class="block text-sm font-medium text-gray-700 mb-1">University /
                     Organization</label>
-                <input type="text" id="school" name="school" value="{{ old('school') }}" required
+                <input type="text" id="school" name="school" required
                     class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-accent-dark focus:ring-2 focus:ring-accent/30 outline-none transition-all"
                     placeholder="University of Notre Dame">
-                @error('school') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                <p class="mt-1 text-xs text-red-600 hidden" data-error="school"></p>
             </div>
 
             <div>
@@ -173,12 +178,12 @@
                     StartupForge?</label>
                 <textarea id="use_case" name="use_case" rows="4" required
                     class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-accent-dark focus:ring-2 focus:ring-accent/30 outline-none transition-all resize-none"
-                    placeholder="Tell us about your accelerator program, cohort size, and what you're looking for...">{{ old('use_case') }}</textarea>
-                @error('use_case') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                    placeholder="Tell us about your accelerator program, cohort size, and what you're looking for..."></textarea>
+                <p class="mt-1 text-xs text-red-600 hidden" data-error="use_case"></p>
             </div>
 
             <div class="pt-2">
-                <button type="submit"
+                <button type="submit" id="submit-btn"
                     class="w-full bg-primary text-white font-semibold px-8 py-3.5 rounded-xl hover:bg-gray-800 transition-colors">
                     Submit Request
                 </button>
@@ -186,4 +191,65 @@
         </form>
     </div>
 </section>
+
+<script>
+    // Phone mask: (XXX) XXX-XXXX
+    document.getElementById('phone').addEventListener('input', function (e) {
+        let digits = e.target.value.replace(/\D/g, '').substring(0, 10);
+        let formatted = '';
+        if (digits.length > 0) formatted = '(' + digits.substring(0, 3);
+        if (digits.length >= 3) formatted += ') ';
+        if (digits.length > 3) formatted += digits.substring(3, 6);
+        if (digits.length >= 6) formatted += '-' + digits.substring(6);
+        e.target.value = formatted;
+    });
+
+    // Submit via fetch, show success in-place
+    document.getElementById('access-form').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const form = e.target;
+        const btn = document.getElementById('submit-btn');
+        const errors = form.querySelectorAll('[data-error]');
+
+        // Clear previous errors
+        errors.forEach(el => { el.textContent = ''; el.classList.add('hidden'); });
+
+        btn.disabled = true;
+        btn.textContent = 'Submitting...';
+
+        try {
+            const response = await fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': form.querySelector('[name=_token]').value,
+                },
+                body: new FormData(form),
+            });
+
+            if (response.status === 422) {
+                const data = await response.json();
+                for (const [field, messages] of Object.entries(data.errors || {})) {
+                    const el = form.querySelector(`[data-error="${field}"]`);
+                    if (el) {
+                        el.textContent = messages[0];
+                        el.classList.remove('hidden');
+                    }
+                }
+                btn.disabled = false;
+                btn.textContent = 'Submit Request';
+                return;
+            }
+
+            if (response.ok || response.status === 302) {
+                form.classList.add('hidden');
+                document.getElementById('form-success').classList.remove('hidden');
+            }
+        } catch {
+            btn.disabled = false;
+            btn.textContent = 'Submit Request';
+        }
+    });
+</script>
 @endsection
