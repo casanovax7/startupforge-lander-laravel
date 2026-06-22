@@ -7,11 +7,13 @@
     <title>@yield('title', 'StartupForge — Accelerator Management Platform')</title>
     <meta name="description"
         content="@yield('description', 'StartupForge is a CRM and management platform purpose-built for university startup accelerators and entrepreneurship programs.')">
-    <link rel="icon" href="/favicon.ico" sizes="48x48">
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-    <link rel="icon" href="/favicon-96x96.png" type="image/png" sizes="96x96">
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-    <link rel="manifest" href="/site.webmanifest">
+    {{-- Cache-bust favicons by file mtime so replacing an asset invalidates the browser cache automatically. --}}
+    <link rel="icon" type="image/png" href="/favicon-96x96.png?v={{ filemtime(public_path('favicon-96x96.png')) }}" sizes="96x96">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v={{ filemtime(public_path('favicon.svg')) }}">
+    <link rel="shortcut icon" href="/favicon.ico?v={{ filemtime(public_path('favicon.ico')) }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v={{ filemtime(public_path('apple-touch-icon.png')) }}">
+    <meta name="apple-mobile-web-app-title" content="StartupForge">
+    <link rel="manifest" href="/site.webmanifest?v={{ filemtime(public_path('site.webmanifest')) }}">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:300,400,500,600,700" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -20,13 +22,8 @@
 <body class="bg-white text-gray-900 antialiased">
     <header class="fixed top-0 inset-x-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
         <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-            <a href="/" class="flex items-center gap-2.5">
-                <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                    <svg class="w-5 h-5 text-accent" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M13 3L4 14h7l-2 7 9-11h-7l2-7z" />
-                    </svg>
-                </div>
-                <span class="text-lg font-semibold text-primary">StartupForge</span>
+            <a href="/" class="flex items-center">
+                <img src="/startupforge_PrimaryWide.png" alt="StartupForge" class="h-8 w-auto">
             </a>
             <nav class="hidden sm:flex items-center gap-6 text-sm font-medium text-gray-600">
                 <a href="/#features" class="hover:text-primary transition-colors">Features</a>
@@ -41,17 +38,12 @@
         @yield('content')
     </main>
 
-    <footer class="bg-primary text-gray-400 py-12 mt-24">
+    <footer class="text-gray-400 py-12 mt-24" style="background-color: #262d34;">
         <div class="max-w-6xl mx-auto px-6">
             <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div class="flex items-center gap-2.5">
-                    <div class="w-7 h-7 bg-gray-800 rounded-lg flex items-center justify-center">
-                        <svg class="w-4 h-4 text-accent" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M13 3L4 14h7l-2 7 9-11h-7l2-7z" />
-                        </svg>
-                    </div>
-                    <span class="text-sm font-medium text-gray-300">StartupForge</span>
-                </div>
+                <a href="/" class="flex items-center">
+                    <img src="/startupforge_DarkWide.png" alt="StartupForge" class="h-7 w-auto">
+                </a>
                 <nav class="flex items-center gap-6 text-sm">
                     <a href="/privacy" class="hover:text-white transition-colors">Privacy Policy</a>
                     <a href="/terms" class="hover:text-white transition-colors">Terms of Service</a>
